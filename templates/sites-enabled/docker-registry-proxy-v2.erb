@@ -3,12 +3,8 @@ upstream docker-registry {
 }
 
 server {
-  listen 443;
+  listen 80;
   server_name <%= ENV['SERVER_NAME'] %>;
-
-  ssl on;
-  ssl_certificate <%= ENV['CERT_FILE'] %>;
-  ssl_certificate_key <%= ENV['KEY_FILE'] %>;
 
   client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
 

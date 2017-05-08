@@ -1,11 +1,5 @@
 #!/usr/bin/env bats
 
-setup() {
-  mkdir /etc/nginx/ssl
-  openssl req -x509 -batch -nodes -newkey rsa:2048 -keyout /etc/nginx/ssl/docker-registry-proxy.key \
-  -out /etc/nginx/ssl/docker-registry-proxy.crt
-}
-
 teardown() {
   /usr/sbin/nginx -s stop
   pkill tail
@@ -39,46 +33,6 @@ teardown() {
   run timeout -t 1 /bin/bash run-docker-registry-proxy.sh
   [ "$status" -eq 1 ]
   [[ "$output" =~ "REGISTRY_PORT" ]]
-}
-
-@test "docker-registry-proxy requires a key in /etc/nginx/ssl" {
-  export AUTH_CREDENTIALS=foobar:password
-  export REGISTRY_PORT=tcp://172.17.0.70:5000
-  export DOCKER_REGISTRY_TAG=latest
-  rm /etc/nginx/ssl/docker-registry-proxy.key
-  run timeout -t 1 /bin/bash run-docker-registry-proxy.sh
-  [ "$status" -eq 1 ]
-  [[ "$output" =~ "No key file" ]]
-}
-
-@test "docker-registry-proxy returns an error if more than one key is provided" {
-  export AUTH_CREDENTIALS=foobar:password
-  export REGISTRY_PORT=tcp://172.17.0.70:5000
-  export DOCKER_REGISTRY_TAG=latest
-  touch /etc/nginx/ssl/extra-key.key
-  run timeout -t 1 /bin/bash run-docker-registry-proxy.sh
-  [ "$status" -eq 1 ]
-  [[ "$output" =~ "Multiple key files" ]]
-}
-
-@test "docker-registry-proxy requires a certificate in /etc/nginx/ssl" {
-  export AUTH_CREDENTIALS=foobar:password
-  export REGISTRY_PORT=tcp://172.17.0.70:5000
-  export DOCKER_REGISTRY_TAG=latest
-  rm /etc/nginx/ssl/docker-registry-proxy.crt
-  run timeout -t 1 /bin/bash run-docker-registry-proxy.sh
-  [ "$status" -eq 1 ]
-  [[ "$output" =~ "No certificate file" ]]
-}
-
-@test "docker-registry-proxy returns an error if more than one certificate is provided" {
-  export AUTH_CREDENTIALS=foobar:password
-  export REGISTRY_PORT=tcp://172.17.0.70:5000
-  export DOCKER_REGISTRY_TAG=latest
-  touch /etc/nginx/ssl/extra-cert.crt
-  run timeout -t 1 /bin/bash run-docker-registry-proxy.sh
-  [ "$status" -eq 1 ]
-  [[ "$output" =~ "Multiple certificate files" ]]
 }
 
 @test "docker-registry-proxy configures a v1 registry proxy if DOCKER_REGISTRY_TAG is omitted" {

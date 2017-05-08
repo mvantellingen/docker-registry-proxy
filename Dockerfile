@@ -19,11 +19,6 @@ RUN chmod 700 ./run-docker-registry-proxy.sh
 ADD test /tmp/test
 RUN bats /tmp/test
 
-# When running a container from this image, map a directory containing
-# docker-registry-proxy.crt and docker-registry-proxy.key to this volume, e.g.,
-# "-v /path/to/my/keys:/etc/nginx/ssl"
-VOLUME /etc/nginx/ssl
-
-EXPOSE 443
+EXPOSE 80
 
 CMD ["./run-docker-registry-proxy.sh"]
