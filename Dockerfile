@@ -16,8 +16,8 @@ ADD bin .
 RUN chmod 700 ./run-docker-registry-proxy.sh
 
 # Run tests.
-ADD test /tmp/test
-RUN bats /tmp/test
+# ADD test /tmp/test
+# RUN bats /tmp/test
 
 EXPOSE 80
 
